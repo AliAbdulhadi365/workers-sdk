@@ -1,5 +1,4 @@
 import { ms } from "itty-time";
-import { ABORT_REASONS } from "./errors";
 import type { Engine } from "../engine";
 import type { WorkflowSleepDuration } from "cloudflare:workers";
 
@@ -121,6 +120,22 @@ export class GracePeriodSemaphore {
 		this.#waitingSteps = [];
 	}
 
+	dispose() {
+		// Reject all waiting step promises so they stop blocking
+		for (const promise of this.#waitingSteps) {
+			promise.rejectCallback();
+		}
+		this.#waitingSteps = [];
+
+		// Reject all waiting promises (e.g. pause)
+		for (const promise of this.#waitingPromises) {
+			promise.rejectCallback();
+		}
+		this.#waitingPromises = [];
+
+		this.#canInitiateSteps = false;
+	}
+
 	isRunningStep() {
 		return this.#counter > 0;
 	}
@@ -154,7 +169,9 @@ export const startGracePeriod: GracePeriodCallback = async (
 		}
 
 		latestGracePeriodTimestamp = thisTimestamp;
-		await scheduler.wait(timeoutMs);
+		await scheduler.wait(timeoutMs, {
+			signal: engine.engineAbortController.signal,
+		});
 		if (
 			thisTimestamp !== latestGracePeriodTimestamp ||
 			engine.timeoutHandler.isRunningStep()
@@ -166,7 +183,8 @@ export const startGracePeriod: GracePeriodCallback = async (
 
 		// Ensure next alarm is set before we abort
 		await engine.priorityQueue?.handleNextAlarm();
-		await engine.abort(ABORT_REASONS.GRACE_PERIOD_COMPLETE);
+		// TODO: possibly handle alarms
+		// await engine.abort(ABORT_REASONS.GRACE_PERIOD_COMPLETE);
 	};
 	void gracePeriodHandler();
 };

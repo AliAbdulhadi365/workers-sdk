@@ -99,6 +99,7 @@ export class Engine extends DurableObject<Env> {
 	timeoutHandler: GracePeriodSemaphore;
 	priorityQueue: TimePriorityQueue | undefined;
 	stepLimit: number;
+	engineAbortController: AbortController = new AbortController();
 
 	waiters: Map<string, Array<(event: Event | PromiseLike<Event>) => void>> =
 		new Map();
@@ -425,7 +426,17 @@ export class Engine extends DurableObject<Env> {
 
 	async abort(reason: string) {
 		await this.ctx.storage.sync();
-		this.ctx.abort(reason);
+
+		// Dispose the semaphore so steps blocked on acquire() are rejected
+		this.timeoutHandler.dispose();
+
+		// Abort all active scheduler.wait timers via the shared signal
+		const abortError = new Error(reason);
+		this.engineAbortController.abort(abortError);
+
+		await this.ctx.blockConcurrencyWhile(async () => {
+			throw abortError;
+		});
 	}
 
 	// Called by the dispose function when introspecting the instance in tests
@@ -434,7 +445,12 @@ export class Engine extends DurableObject<Env> {
 		await this.ctx.storage.sync();
 		await this.ctx.storage.deleteAll();
 
-		this.ctx.abort(reason);
+		this.timeoutHandler.dispose();
+		const abortError = new Error(reason ?? "unsafeAbort");
+		this.engineAbortController.abort(abortError);
+		await this.ctx.blockConcurrencyWhile(async () => {
+			throw abortError;
+		});
 	}
 
 	async storeEventMap() {

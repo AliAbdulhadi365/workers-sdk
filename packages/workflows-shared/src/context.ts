@@ -279,7 +279,9 @@ export class Context extends RpcTarget {
 				// complete sleep if it didn't finish for some reason
 				if (retryEntryPQ !== undefined) {
 					await this.#engine.timeoutHandler.release(this.#engine);
-					await scheduler.wait(retryEntryPQ.targetTimestamp - Date.now());
+					await scheduler.wait(retryEntryPQ.targetTimestamp - Date.now(), {
+						signal: this.#engine.engineAbortController.signal,
+					});
 					await this.#engine.timeoutHandler.acquire(this.#engine);
 					// @ts-expect-error priorityQueue is initiated in init
 					this.#engine.priorityQueue.remove({
@@ -298,6 +300,11 @@ export class Context extends RpcTarget {
 			}
 			const { accountId, instance } = instanceMetadata;
 
+			// AbortController to cancel the timeout when the step callback
+			// wins the Promise.race — matches production's pattern of
+			// aborting the losing side to prevent dangling promises.
+			const stepAbortController = new AbortController();
+
 			try {
 				const timeoutPromise = async () => {
 					const priorityQueueHash = `${cacheKey}-${stepState.attemptedCount}`;
@@ -311,7 +318,12 @@ export class Context extends RpcTarget {
 						targetTimestamp: Date.now() + timeout,
 						type: "timeout",
 					});
-					await scheduler.wait(timeout);
+					await scheduler.wait(timeout, {
+						signal: AbortSignal.any([
+							stepAbortController.signal,
+							this.#engine.engineAbortController.signal,
+						]),
+					});
 					// if we reach here, means that we can try to delete the timeout from the PQ
 					// because we managed to wait in the same lifetime
 					// @ts-expect-error priorityQueue is initiated in init
@@ -377,6 +389,9 @@ export class Context extends RpcTarget {
 						timeoutPromise(),
 					]);
 				}
+
+				// Cancel the timeout so its scheduler.wait doesn't dangle
+				stepAbortController.abort("step finished");
 
 				// if we reach here, means that the clouse ran successfully and we can remove the timeout from the PQ
 				// @ts-expect-error priorityQueue is initiated in init
@@ -448,6 +463,9 @@ export class Context extends RpcTarget {
 					}
 				);
 			} catch (e) {
+				// Cancel the timeout so its scheduler.wait doesn't dangle
+				stepAbortController.abort("step errored");
+
 				const error = e as Error;
 				// if we reach here, means that the clouse ran but errored out and we can remove the timeout from the PQ
 				// @ts-expect-error priorityQueue is initiated in init
@@ -512,7 +530,9 @@ export class Context extends RpcTarget {
 					});
 					await this.#engine.timeoutHandler.release(this.#engine);
 					// this may never finish because of the grace period - but waker will take of it
-					await scheduler.wait(durationMs);
+					await scheduler.wait(durationMs, {
+						signal: this.#engine.engineAbortController.signal,
+					});
 
 					// if it ever reaches here, we can try to remove it from the priority queue since it's no longer useful
 					// @ts-expect-error priorityQueue is initiated in init
@@ -591,7 +611,8 @@ export class Context extends RpcTarget {
 			// in case the engine dies while sleeping and wakes up before the retry period
 			if (entryPQ !== undefined) {
 				await scheduler.wait(
-					disableSleep ? 0 : entryPQ.targetTimestamp - Date.now()
+					disableSleep ? 0 : entryPQ.targetTimestamp - Date.now(),
+					{ signal: this.#engine.engineAbortController.signal }
 				);
 				// @ts-expect-error priorityQueue is initiated in init
 				this.#engine.priorityQueue.remove({ hash: cacheKey, type: "sleep" });
@@ -635,7 +656,9 @@ export class Context extends RpcTarget {
 		});
 
 		// this probably will never finish except if sleep is less than the grace period
-		await scheduler.wait(disableSleep ? 0 : duration);
+		await scheduler.wait(disableSleep ? 0 : duration, {
+			signal: this.#engine.engineAbortController.signal,
+		});
 
 		this.#engine.writeLog(
 			InstanceEvent.SLEEP_COMPLETE,
@@ -771,7 +794,9 @@ export class Context extends RpcTarget {
 					type: "timeout",
 				});
 			}
-			await scheduler.wait(timeoutToWait);
+			await scheduler.wait(timeoutToWait, {
+				signal: this.#engine.engineAbortController.signal,
+			});
 			// if we reach here, means that we can try to delete the timeout from the PQ
 			// because we managed to wait in the same lifetime
 
