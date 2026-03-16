@@ -1,5 +1,34 @@
 # wrangler
 
+## 4.74.1
+
+### Patch Changes
+
+- [#12927](https://github.com/cloudflare/workers-sdk/pull/12927) [`c9b3184`](https://github.com/cloudflare/workers-sdk/commit/c9b31840631585418b8926e8228db486b619b4c7) Thanks [@penalosa](https://github.com/penalosa)! - Bump undici from 7.18.2 to 7.24.4
+
+- [#12875](https://github.com/cloudflare/workers-sdk/pull/12875) [`13df6c7`](https://github.com/cloudflare/workers-sdk/commit/13df6c75be49ac32fc1c57e2e24523e86ced2115) Thanks [@dependabot](https://github.com/apps/dependabot)! - Update dependencies of "miniflare", "wrangler"
+
+  The following dependency versions have been updated:
+
+  | Dependency | From         | To           |
+  | ---------- | ------------ | ------------ |
+  | workerd    | 1.20260312.1 | 1.20260316.1 |
+
+- [#12835](https://github.com/cloudflare/workers-sdk/pull/12835) [`c600ce0`](https://github.com/cloudflare/workers-sdk/commit/c600ce0a45ad334a5a961cf7774758860581d9d2) Thanks [@dario-piotrowicz](https://github.com/dario-piotrowicz)! - Fix execution freezing on `debugger` statements when DevTools is not attached
+
+  Previously, `wrangler` always sent `Debugger.enable` to the runtime on connection, even when DevTools wasn't open. This caused scripts to freeze on `debugger` statements. Now `Debugger.enable` is only sent when DevTools is actually attached, and `Debugger.disable` is sent when DevTools disconnects to stop the runtime from performing debugging work.
+
+- [#12894](https://github.com/cloudflare/workers-sdk/pull/12894) [`f509d13`](https://github.com/cloudflare/workers-sdk/commit/f509d13b97a832a28ed6bc568c7bcf6fc7d4a4ff) Thanks [@gpanders](https://github.com/gpanders)! - Simplify description of --json option
+
+  Remove extraneous adjectives in the description of the `--json` option.
+
+- [#11888](https://github.com/cloudflare/workers-sdk/pull/11888) [`0a7fef9`](https://github.com/cloudflare/workers-sdk/commit/0a7fef9ee924b6d0817a69be9d893dc8a40c9a19) Thanks [@staticpayload](https://github.com/staticpayload)! - Reject cross-drive module paths in Pages Functions routing
+
+  On Windows, module paths using a different drive letter could be parsed in a way that bypassed the project-root check. These paths are now parsed correctly and rejected when they resolve outside the project.
+
+- Updated dependencies [[`c9b3184`](https://github.com/cloudflare/workers-sdk/commit/c9b31840631585418b8926e8228db486b619b4c7), [`13df6c7`](https://github.com/cloudflare/workers-sdk/commit/13df6c75be49ac32fc1c57e2e24523e86ced2115)]:
+  - miniflare@4.20260316.0
+
 ## 4.74.0
 
 ### Minor Changes

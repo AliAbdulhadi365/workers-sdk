@@ -1,5 +1,49 @@
 # create-cloudflare
 
+## 2.64.9
+
+### Patch Changes
+
+- [#11639](https://github.com/cloudflare/workers-sdk/pull/11639) [`e9f5f30`](https://github.com/cloudflare/workers-sdk/commit/e9f5f30d536e89d0f182e336a0abc0e246bdc615) Thanks [@dependabot](https://github.com/apps/dependabot)! - Update dependencies of "create-cloudflare"
+
+  The following dependency versions have been updated:
+
+  | Dependency      | From   | To     |
+  | --------------- | ------ | ------ |
+  | create-next-app | 15.5.6 | 16.1.6 |
+
+- [#12905](https://github.com/cloudflare/workers-sdk/pull/12905) [`e7ef325`](https://github.com/cloudflare/workers-sdk/commit/e7ef325cd069e55116d35f1fea572a87cb919dab) Thanks [@dependabot](https://github.com/apps/dependabot)! - Update dependencies of "create-cloudflare"
+
+  The following dependency versions have been updated:
+
+  | Dependency | From   | To     |
+  | ---------- | ------ | ------ |
+  | nuxi       | 3.33.1 | 3.34.0 |
+
+- [#12907](https://github.com/cloudflare/workers-sdk/pull/12907) [`92402f6`](https://github.com/cloudflare/workers-sdk/commit/92402f677a9640a08cd7bff4b0d1bb301c52b030) Thanks [@dependabot](https://github.com/apps/dependabot)! - Update dependencies of "create-cloudflare"
+
+  The following dependency versions have been updated:
+
+  | Dependency   | From   | To    |
+  | ------------ | ------ | ----- |
+  | create-astro | 4.13.2 | 5.0.0 |
+
+- [#12908](https://github.com/cloudflare/workers-sdk/pull/12908) [`eadb0fd`](https://github.com/cloudflare/workers-sdk/commit/eadb0fdc56db7984253dd725c4178c83dd70d948) Thanks [@dependabot](https://github.com/apps/dependabot)! - Update dependencies of "create-cloudflare"
+
+  The following dependency versions have been updated:
+
+  | Dependency      | From   | To     |
+  | --------------- | ------ | ------ |
+  | @angular/create | 21.2.1 | 21.2.2 |
+
+- [#12909](https://github.com/cloudflare/workers-sdk/pull/12909) [`75fa04b`](https://github.com/cloudflare/workers-sdk/commit/75fa04bf029a730513a58c1c1b26f33e93227137) Thanks [@dependabot](https://github.com/apps/dependabot)! - Update dependencies of "create-cloudflare"
+
+  The following dependency versions have been updated:
+
+  | Dependency  | From   | To     |
+  | ----------- | ------ | ------ |
+  | create-qwik | 1.19.1 | 1.19.2 |
+
 ## 2.64.8
 
 ### Patch Changes

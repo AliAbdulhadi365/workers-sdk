@@ -1,5 +1,19 @@
 # miniflare
 
+## 4.20260316.0
+
+### Patch Changes
+
+- [#12927](https://github.com/cloudflare/workers-sdk/pull/12927) [`c9b3184`](https://github.com/cloudflare/workers-sdk/commit/c9b31840631585418b8926e8228db486b619b4c7) Thanks [@penalosa](https://github.com/penalosa)! - Bump undici from 7.18.2 to 7.24.4
+
+- [#12875](https://github.com/cloudflare/workers-sdk/pull/12875) [`13df6c7`](https://github.com/cloudflare/workers-sdk/commit/13df6c75be49ac32fc1c57e2e24523e86ced2115) Thanks [@dependabot](https://github.com/apps/dependabot)! - Update dependencies of "miniflare", "wrangler"
+
+  The following dependency versions have been updated:
+
+  | Dependency | From         | To           |
+  | ---------- | ------------ | ------------ |
+  | workerd    | 1.20260312.1 | 1.20260316.1 |
+
 ## 4.20260312.1
 
 ### Patch Changes
